@@ -481,6 +481,9 @@ void game() {
   int run_count = 0;
   int score_count = 0;
 
+  //Swing servo intitially
+  move_servo(false, true);
+
   //Main game loop, run while not all the targets have been hit and we're still under the time limit
   while(current <= MAX_TIME && hits < NUM_HITS) {
 
