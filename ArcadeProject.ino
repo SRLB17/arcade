@@ -456,16 +456,6 @@ void game() {
 
   while(current <= MAX_TIME && hits < NUM_HITS) {
     
-    //if (SERVO_NATURAL_FREQUENCY <= 1 && (1/run_count) == SERVO_NATURAL_FREQUENCY) {
-    //  step_servo();
-    //} else if (SERVO_NATURAL_FREQUENCY >= 1) {
-    //  int n = ceil(1/SERVO_NATURAL_FREQUENCY);
-    //  for(int i = 0; i < n; i++) {
-    //    step_servo();
-    //  }
-    //}
-
-
     if (change) {
 
       change = false;
@@ -504,7 +494,10 @@ void game() {
       }
     }
 
-    if ( readHS() ) led_baselines[lit_index] = avg;
+    if ( readHS() ) {
+      avg_ready[lit_index] = false;
+      change = true;
+    }
 
     avg = total / numReadings;
 
