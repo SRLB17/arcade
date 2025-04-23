@@ -60,7 +60,7 @@ int pos; // 0 := end value, 1 := start value
 //Takes nothing, sets up the servo
 void setup_servo() {
   servo.attach(servoPin, SERVO_MIN, SERVO_MAX);
-  servo.write(46);
+  servo.write(SERVO_RANGE[1]);
 }
 
 /**
@@ -192,7 +192,8 @@ bool readStart() {
 //Takes nothing, returns true if the HS button is being pressed
 bool readHS() {
   command_read = analogRead(startPin);
-  return (command_read >= highscore_read*(2-TOLERANCE));
+  //return (command_read >= highscore_read * (2.0-TOLERANCE));
+  return (command_read >= 400 && !readStart());
 }
 
 /* END BUTTONS */
@@ -292,29 +293,38 @@ void loop()
 
     //Light up a target if we need to change them
     int lit_index = changeTarget(0);
+    
     while(true) {
+
+
       if (readStart()) {
         /* Start button pressed */
 
         move_servo(true); 
-        delay(15);
-        //start_motor();
+        //delay(15);
+        start_motor();
+        Serial.print(analogRead(startPin));
+        Serial.println(" Start!");
 
       } else if (readHS()) {
         /* HS button pressed */
+        Serial.print(analogRead(startPin));
 
+        Serial.println(" HS");
         //lit_index = changeTarget(lit_index);
         //Serial.println(lit_index);
         //delay(500);
         move_servo(false); 
-        delay(15);
-        //stop_motor();
+        //delay(15);
+        stop_motor();
 
       } else {
         /* Neither button pressed */
 
+        Serial.println(analogRead(startPin));
       }
       /* Run every time */
+      
 
     }
   }
@@ -329,13 +339,17 @@ void loop()
       /* Start button pressed */
       //Start the game!
       gameStart = true;
+      Serial.print(analogRead(startPin));
       Serial.println("START! ");
 
     } else if ( readHS() ) {
       /* HS button pressed */
       //Show the user the current high scores, then return to the home screen
       showHighScores();
-      Serial.println("HIGHSCORES! ");
+      Serial.println("HIGHSCORES!");
+    } else {
+      
+      Serial.println(analogRead(startPin));
     }
   }
 
@@ -488,6 +502,9 @@ void game() {
       readIndex = 0;
       total = led_baselines[lit_index] * numReadings;
       avg = led_baselines[lit_index];
+
+      //Move the servo
+      move_servo(false, true);
     }
 
     //Get data from the sensor
@@ -578,16 +595,16 @@ void game() {
     /*DEBUG*/
     //Debugging messages while the game is running
     // [avg] [readIndex] [current read] [baseline] [score count]
-    Serial.print(avg);
-    Serial.print(" ");
-    Serial.print(readIndex);
-    Serial.print(" ");
-    Serial.print(readings[readIndex-1]);
-    Serial.print(" ");
-    Serial.print(led_baselines[lit_index]);
-    Serial.print(" ");
-    Serial.print(score_count);
-    Serial.println("");
+    ////Serial.print(avg);
+    ////Serial.print(" ");
+    ////Serial.print(readIndex);
+    ////Serial.print(" ");
+    ////Serial.print(readings[readIndex-1]);
+    ////Serial.print(" ");
+    ////Serial.print(led_baselines[lit_index]);
+    ////Serial.print(" ");
+    ////Serial.print(score_count);
+    ////Serial.println("");
     /*END DEBUG*/
   }
 
